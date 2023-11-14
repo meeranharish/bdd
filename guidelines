@@ -1,0 +1,233 @@
+BDD(Behavior Driven Development):
+BDD is a software development methodology that focuses on defining the behavior of a system using examples in plain language. BDD encourages collaboration among three amigos(developers, testers, and business stakeholders) to ensure that everyone has a shared understanding of the system's behavior.
+
+Gherkin:
+BDD uses a structured language called Gherkin to define the behavior of the system(without detailing how that behavior is implemented) in terms of scenarios and steps which acts as acceptance criteria and test scenarios. These scenarios are then used to drive the development process, with developers writing code to make the scenarios work, thus Test Driven Development(TDD) is practiced. Gherkin syntax is used as living documentation for the project as anyways the tests must always be updated
+
+Who writes gherkin:
+The 3 Amigos
+
+The business analyst/product owner defines the scope of the project and creates scenarios for the features;
+The tester provides considerations related to edge test scenarios; and
+The developer predicts possible technical challenges.
+At the end of the meeting, the three collaboratively define the acceptance criteria examples (called scenarios), which are written using Gherkin.
+
+Gherkin Syntax:
+Feature:  I want to login into the site with valid data and Invalid data
+
+  Scenario: Existing user should login successfully.
+    Given the user is on the Home page
+    When the user navigates to the Login page
+    And the user enters valid username and password
+    Then the successful login message is displayed
+
+  Scenario: Non existing user should not be logged in
+    Given the user is on the Home page
+    When the user navigates to the Login page
+    And the user enters invalid username and password
+    Then the error message is displayed
+Feature Keyword:
+The feature file starts with the keyword Feature. Under feature, you can mention the feature name which is to be tested.
+
+Scenario Keyword:
+There can be more than one scenario under one feature file, and each scenario starts with the keyword Scenario, followed by the scenario name.
+
+Given Keyword:
+Given keyword is normally used when we have to give some pre-condition in our test case
+
+When Keyword:
+When keyword is used to perform some action
+
+Then Keyword:
+Then Keyword is used for the final outcome or for validation
+
+And Keyword:
+There is no annotation for AND keyword. It is used to connect two statements and provides the logical AND condition between any two statements. AND can be used in combination with GIVEN, WHEN and THEN statements and used for positive assertion
+
+But Keyword:
+But keyword is used to represent negative assertions in addition to the previous statement. Similar to AND statement
+
+Background Keyword:
+If there is any repetitive step that is going to be used in every scenario. We just add the repetitive step under Keyword Background. Step keep under Background would be run before every scenario.
+
+Feature:  I want to login into the site with valid data and Invalid data
+
+  Background: 
+    Given the user is on the Home page
+    When the user navigates to the Login page
+  
+  Scenario: Existing user should login successfully.
+    When the user enters valid username and password
+    Then the successful login message is displayed
+
+  Scenario: Non existing user should not be logged in
+    When the user enters invalid username and password
+    Then the error message is displayed
+Data Driven Testing:
+If we want to run the same test for different data, it is possible by following scenario outline syntax. Scenario outline injects the parameters at the scenario level and the scenario is run for every example data
+
+Feature:  I want to login into the site with valid and invalid data
+
+Scenario Outline: Login Validation
+       Given I navigate to the Website
+       When I enter "<email>" and "<password>" to login Page
+       Then <message> message is displayed
+
+       Example:
+           | email | password |message|
+           | name@mail.com | Password123 | login successful |
+           | qatubeupdate@yopmail.com | 12345 | login failed |
+Use of Tags:
+Tags are used to group test scenarios in to suites. For eg: Regression suite, smoke test suite, trial-xyz suite, login suite, dashboard suite etc. This is achieved by adding one or more tags to a scenario and we can selectively execute the test based on the tags. Tags can also be used to link to an ADO work item eg: @129045
+Example:
+
+@regression @trialxyz @dashboard @129045
+Scenario: Patient should see the dosage chart in dashboard
+Given the patient is enrolled for 'Trial 123'
+And the patient login
+When the patient navigates to Dashboard
+Then the patient view the dosage chart
+Use of parameters:
+Parameters are variables passed in a step which helps to reuse the same step for different values
+
+Example:
+
+Scenario 1: Patient should see the dosage chart in dashboard
+Given the patient is enrolled for 'Trial XYZ'
+And the patient login
+When the patient navigates to Dashboard
+Then the patient view the dosage chart
+
+Scenario 1: Patient should be able to submit the BG measurement
+Given the patient is enrolled for 'Trial ABC'
+And the patient login
+When the patient connects the BG meter
+And patient measures the BG level
+Then the BG measurement is imported to the mobile app
+And patient submits the BG measurement form
+
+Best Practices:
+1. Write gherkin as early as possible:
+Gherkin serving only as test scenarios for manual or automation test will not provide full value and may add complication in test automation framework. Rather if gherkin as BDD model is used as requirement statements, which are later developed and the same gherkin is used as test scenarios, we will get good value out of it, in terms of alignment among business + dev + test. We can generate reporting with traceability and importantly Test driven development is inherently followed leading to better quality
+
+2. The order of gherkin should be GIVEN_WHEN_THEN representing STATE_ACTION_STATE:
+'Given' describing the precondition state;
+'When' describing the action;
+'Then' describing the expected outcome state
+And and But keywords can follow the given or when or then statements to specify additional state or action
+
+3. A scenario should have only one each of GIVEN, WHEN and THEN, in order:
+A scenario should have only one Given and one When and one Then and also in the same order. There can be And or But in between Given or When or Then.
+
+Bad example:
+
+Given the patient is enrolled for a trial
+When the patient login
+Given the patient navigates to Dashboard
+When the dashboard page is loaded
+Then the dosage chart is present
+Good Example:
+
+Given the patient is enrolled for a trial
+And the patient login
+When the patient navigates to Dashboard
+Then the dosage year chart is present 
+4. Avoid conjunctive steps:
+Keep your step limiting to single behaviour of the users. This will help to breakdown the technical implementation. Also ensures reusable steps and step wise verification of the testing
+
+Bad example:
+
+Given the patient is enrolled for 'trial 123' and login
+When the  patient opens the dashboard and dashboard loads
+Then the patient view the dosage chart 
+Good Example:
+
+Given the patient is enrolled for 'Trial 123'
+And the patient login
+When the patient navigates to Dashboard
+Then the patient view the dosage chart
+5. A scenario should be isolated and atomic:
+One scenario should represent only one use case. A scenario should be executed in isolation without depending on result from another scenario.
+
+Bad example:
+
+scenario 1: Patient enrolment
+Given the patient is enrolled for 'Trial 123'
+Then the patient should be notified for 'trial 123' enrolment
+
+Scenario 2: Patient login
+Given the patient is login
+When the patient navigates to Dashboard
+Then the patient view the dosage chart
+And the patient logs out
+And the patient should land in login screen
+Good Example:
+
+Scenario 2: Patient login
+Given the patient is enrolled for 'Trial 123'
+And the patient login
+When the patient navigates to Dashboard
+Then the patient view the dosage chart
+6. Reference the end user rather than using pronouns:
+Bad example:
+
+Given you are logged in
+When you navigates to Dashboard
+Then the dosage chart is present 
+Good Example:
+
+Given the patient is enrolled for 'Trial 123'
+And the patient login
+When the patient navigates to Dashboard
+Then the patient view the dosage chart
+7. Use declarative statements from user behaviour point of view rather than imperative technical actions:
+Rather specifying technical details or every single action of the users in the gherkin, follow declarative style to describe the user behaviour. This will make the maintenance easy.
+
+Bad example:
+
+Given the patient types login id
+And the patient types password
+And the patient clicks login button
+When the patient clicks dashboard menu
+And the dashboard menu is loaded
+Then the patient should see the dosage chart
+Good Example:
+
+Given the patient is logged in
+When the patient navigates to Dashboard
+Then the patient view the dosage chart
+8. Insert a Narrative:
+A scenario should be able to state what the functionality is and the benefit of the functionality to the user thus explaining why are we implementing this in an understandable way to any reader
+
+Scenario: Patient should see the dosage chart in dashboard
+Given the patient is enrolled for 'Trial 123'
+And the patient login
+When the patient navigates to Dashboard
+Then the patient view the dosage chart
+9. Scenarios ideally should not be too lengthy:
+If your scenarios are too long, say 10 steps, it is highly likely that the scenario can be refined with the guidelines listed so far
+
+10. Avoid writing specific data:
+You may need to run the same scenario in multiple environment. You may not want to give the sensitive data in your report. You want your scenarios to be self explained. So avoid giving test data in the scenarios
+
+Bad example:
+
+Given HCP123 onboard Patient123
+When patient123 login with userid p123ind and password qwerty1$
+And Patient123 navigates to Dashboard
+Then the dosage chart is present 
+Good Example:
+
+Given an HCP onboards a Patient
+When the patient login 
+And the patient navigates to Dashboard
+Then the dosage chart is present 
+Note:
+Perfection may lead to complicaiton. Find what works best for the team and how we can reuse the scenarios and statements without adding overheads.
+
+Follow steps Illustrate, Formulate, Automate, Validate https://www.serenity-dojo.com/minimal-bdd Opens in new window or tab
+
+References
+https://www.browserstack.com/guide/cucumber-best-practices-for-testing Opens in new window or tab
+https://blog.avenuecode.com/gherkin-best-practices Opens in new window or tab
+https://www.redsauce.net/blog/en/gherkin-best-practices Opens in new window or tab
