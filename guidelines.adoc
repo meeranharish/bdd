@@ -96,7 +96,7 @@ Example:
 **When** the user navigates to Dashboard +
 **Then** the user view the usage chart` + 
 
-Use of parameters:
+= Use of parameters:
 Parameters are variables passed in a step which helps to reuse the same step for different values
 
 Example:
